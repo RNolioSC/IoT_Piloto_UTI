@@ -1,3 +1,10 @@
+CREATE DATABASE "BancoDeDados"
+    WITH
+    OWNER = postgres
+    ENCODING = 'UTF8'
+    CONNECTION LIMIT = -1
+    IS_TEMPLATE = False;
+
 DROP TABLE IF EXISTS PacienteDiagnostico;
 DROP TABLE IF EXISTS Pacientes;
 DROP TABLE IF EXISTS Diagnosticos;
