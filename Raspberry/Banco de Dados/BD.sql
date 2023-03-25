@@ -1,9 +1,4 @@
---CREATE DATABASE "BancoDeDados"
---    WITH
---    OWNER = postgres
---    ENCODING = 'UTF8'
---    CONNECTION LIMIT = -1
---    IS_TEMPLATE = False;
+--CREATE DATABASE "bancodedados"
 
 DROP TABLE IF EXISTS PacienteDiagnostico;
 DROP TABLE IF EXISTS Diagnosticos;
@@ -14,6 +9,7 @@ DROP TABLE IF EXISTS AtividadesNAS;
 DROP TABLE IF EXISTS Pacientes;
 
 CREATE TABLE Pacientes (codigo SERIAL PRIMARY KEY, nome VARCHAR(50)); 
+INSERT INTO Pacientes(nome) VALUES ("Paciente1");
 
 CREATE TABLE Diagnosticos(codigo SERIAL PRIMARY KEY, nome VARCHAR(50));
 
@@ -26,7 +22,7 @@ CREATE TABLE PacienteDiagnostico(
 	CONSTRAINT fk2 FOREIGN KEY (codDiagnostico) REFERENCES Diagnosticos(codigo)
 );
 
--- indice pra sort by
+-- indice -> para sort by
 CREATE TABLE AtividadesNAS(codigoNAS VARCHAR(2) PRIMARY KEY, descricao VARCHAR(500), pontos FLOAT, indice SERIAL);
 
 
