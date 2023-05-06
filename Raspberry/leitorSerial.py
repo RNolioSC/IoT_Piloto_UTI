@@ -5,6 +5,7 @@ import argparse
 import mariadb
 from datetime import datetime
 import time
+import sys
 
 def novo_atendimento(user, pw, tag, cod_paciente=1):
         try:
@@ -20,22 +21,19 @@ def novo_atendimento(user, pw, tag, cod_paciente=1):
                 print(e)
                 sys.exit(1)
                 
-        cur = conn.cursor(buffered=True)
+        cur = conn.cursor(buffered=True)  # run multiple querries
         try:
                 timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                print(type(timestamp))
                 cur.execute("INSERT INTO Atendimentos (diaHora, atividade, paciente) VALUES (?, ?, ?) RETURNING codigo", 
                 (timestamp, "1a", cod_paciente))
                 conn.commit()
                 cod_atendimento = cur.fetchone()[0]
-                print(type(cod_atendimento))
-                print(cod_atendimento)
                 cur.nextset()
                 cur.execute("INSERT INTO AtendimentoProfEnf (codAtendimento, codProfEnf) VALUES (?, ?)", 
                 (cod_atendimento, tag))
                 conn.commit()
                 
-                print("atendimento registrado: " + tag)
+                print("atendimento registrado: " + tag + ", " + timestamp)
         except mariadb.Error as e:
                 print(e)
         
@@ -50,7 +48,7 @@ def cadastrar_tag(user, pw, tag, nome, tipo):
                 )
 
         except mariadb.Error as e:
-                print("erro: {e}", e)
+                print(e)
                 sys.exit(1)
                 
         cur = conn.cursor()
@@ -59,7 +57,7 @@ def cadastrar_tag(user, pw, tag, nome, tipo):
                 conn.commit()
                 print("cadastrado: " + tag + ", " + nome)
         except mariadb.Error as e:
-                print("erro: {e}", e)
+                print(e)
 
 if __name__ == "__main__":
 
@@ -68,19 +66,19 @@ if __name__ == "__main__":
         parser.add_argument("-c", "--cadastrar", action='store_true', help="cadastrar nova tag")
         parser.add_argument("-n", "--nome", type=str, help="nome do profissional de enfermagem")
         parser.add_argument("-t", "--tipo", type=str, help="e=enfermeiro ou t=tecnico")
-        parser.add_argument("-u", "--username", type=str,  required=True, help="mariadb username")
-        parser.add_argument("-p", "--password", type=str, required=True, help="mariadb password")
+        #parser.add_argument("-u", "--username", type=str,  required=True, help="mariadb username")
+        #parser.add_argument("-p", "--password", type=str, required=True, help="mariadb password")
         args = parser.parse_args()
         cad = args.cadastrar
         nome = args.nome
         tipo = args.tipo
-        user = args.username
-        pw = args.password
+        #user = args.username
+        user = "admin"
+        #pw = args.password
+        pw = "admin"
 
         while True:
             if ser.in_waiting:
-                time.sleep(0.001)
-                #print("connected")
                 bs = ser.read(ser.in_waiting)
                 print("bs.len="+str(len(bs)))
                 bs = '/'.join([f'0x{b:x}' for b in bs])
@@ -102,6 +100,7 @@ if __name__ == "__main__":
                 print(tag)
                 if cad == True:
                         cadastrar_tag(user, pw, tag, nome, tipo)
+                        break
                 else:
                         novo_atendimento(user, pw, tag)
                 
